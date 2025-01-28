@@ -14,18 +14,34 @@ import {
 } from '@/components/ui/tooltip';
 import { AutoResizeTextarea } from '@/components/autoresize-textarea';
 import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger } from './ui/select';
+
+const MODELS = [
+  'llama3.3',
+  'llama3.2',
+  'llama3.2:1b',
+  'llama2-uncensored',
+  'mistral',
+  'deepseek-r1:1.5b',
+  'deepseek-r1:7b',
+  'deepseek-r1:70b',
+];
 
 export function ChatForm({
   className,
   ...props
 }: React.ComponentProps<'form'>) {
   const [copied, setCopied] = useState(false);
+  const [selectedModel, setSelectedModel] = useState('llama3.2:1b');
+
   const { messages, input, setInput, append } = useChat({
     api: '/api/chat',
+    body: { model: selectedModel },
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!input.trim()) return;
     void append({ content: input, role: 'user' });
     setInput('');
   };
@@ -136,28 +152,30 @@ export function ChatForm({
           >
             {message.content}
           </ReactMarkdown>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  'mt-2',
-                  message.role === 'user' ? 'hidden' : 'flex'
-                )}
-                onClick={() => copyToClipboard(message.content)}
-              >
-                {copied ? (
-                  <Check className="h-3 w-3" />
-                ) : (
-                  <Clipboard className="h-3 w-3" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {copied ? 'Copied!' : 'Copy message'}
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex justify-end">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={cn(
+                    'mt-2',
+                    message.role === 'user' ? 'hidden' : 'flex'
+                  )}
+                  onClick={() => copyToClipboard(message.content)}
+                >
+                  {copied ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Clipboard className="h-3 w-3" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {copied ? 'Copied!' : 'Copy message'}
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       ))}
     </div>
@@ -176,7 +194,7 @@ export function ChatForm({
       </div>
       <form
         onSubmit={handleSubmit}
-        className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-6 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
+        className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-2 flex items-center justify-between rounded-full border px-3 py-1.5 min-h-9 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
       >
         <AutoResizeTextarea
           onKeyDown={handleKeyDown}
@@ -190,7 +208,8 @@ export function ChatForm({
             <Button
               variant="ghost"
               size="sm"
-              className="absolute bottom-1 right-1 size-6 rounded-full"
+              type="submit"
+              className="size-6 rounded-full"
             >
               <ArrowUpIcon size={16} />
             </Button>
@@ -198,6 +217,20 @@ export function ChatForm({
           <TooltipContent sideOffset={12}>Submit</TooltipContent>
         </Tooltip>
       </form>
+      <div className="mx-6 mb-6">
+        <Select onValueChange={setSelectedModel} value={selectedModel}>
+          <SelectTrigger className="rounded-full px-3 py-1.5 h-9 truncate max-w-[140px]">
+            {selectedModel}
+          </SelectTrigger>
+          <SelectContent>
+            {MODELS.map((model) => (
+              <SelectItem key={model} value={model}>
+                {model}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </main>
   );
 }
