@@ -14,7 +14,6 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: ollama('llama3.2:1b'),
-    system: 'give very concise answers.',
     messages,
   });
 
