@@ -23,7 +23,7 @@ const MODELS = [
   'llama2-uncensored',
   'mistral',
   'deepseek-r1:1.5b',
-  'deepseek-r1:7b',
+  'deepseek-r1:8b',
   'deepseek-r1:70b',
 ];
 
@@ -31,7 +31,6 @@ export function ChatForm({
   className,
   ...props
 }: React.ComponentProps<'form'>) {
-  const [copied, setCopied] = useState(false);
   const [selectedModel, setSelectedModel] = useState('llama3.2:1b');
 
   const { messages, input, setInput, append } = useChat({
@@ -51,12 +50,6 @@ export function ChatForm({
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const CodeBlock = ({
@@ -152,7 +145,7 @@ export function ChatForm({
           >
             {message.content}
           </ReactMarkdown>
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -175,7 +168,7 @@ export function ChatForm({
                 {copied ? 'Copied!' : 'Copy message'}
               </TooltipContent>
             </Tooltip>
-          </div>
+          </div> */}
         </div>
       ))}
     </div>
@@ -194,7 +187,7 @@ export function ChatForm({
       </div>
       <form
         onSubmit={handleSubmit}
-        className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-2 flex items-center justify-between rounded-full border px-3 py-1.5 min-h-9 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
+        className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-2 flex items-center justify-between rounded-[17px] border px-3 py-1.5 min-h-9 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
       >
         <AutoResizeTextarea
           onKeyDown={handleKeyDown}
@@ -219,7 +212,7 @@ export function ChatForm({
       </form>
       <div className="mx-6 mb-6">
         <Select onValueChange={setSelectedModel} value={selectedModel}>
-          <SelectTrigger className="rounded-full px-3 py-1.5 h-9 truncate max-w-[140px]">
+          <SelectTrigger className="rounded-[17px] px-3 py-1.5 h-9 truncate max-w-[140px]">
             {selectedModel}
           </SelectTrigger>
           <SelectContent>
